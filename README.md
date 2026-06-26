@@ -35,7 +35,7 @@ what we gain:
 2. efficient range queries: we can just go in order
 3. easier compaction: since logs are sorted we can just take the last log
 
-but there is the obvious question of how can it efficiently keep reverse order.
+but there is the obvious question of how can it efficiently keep sorted order.
 introducing the _memtable_! it is simply an in memory representation of all our keys for our current segment in a balanced tree. when it becomes too large we throw all that in a file (in sorted order). this can run in the background and we can operate on a new memtable while this is going on.
 
 we want our trees to be balanced because they elegantly handle the worst case of binary trees in logn time; binary trees can promise an average logn operation time but we dont live in a perfect world where humanity is at eternal peace and evil and envy and vancouver doesnt exist and so they can unfortunately fall into n time. 

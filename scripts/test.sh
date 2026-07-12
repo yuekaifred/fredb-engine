@@ -11,7 +11,7 @@ for bin in build/tests/test_*; do
   [ -x "$bin" ] || continue
   name=$(basename "$bin")
   case "$name" in
-    test_spam|test_chaos_monkey) continue ;;
+    test_spam|test_chaos_monkey|test_oversized_key_value) continue ;;
   esac
   printf "%-40s " "$name"
   if "./$bin" > /tmp/${name}.log 2>&1; then

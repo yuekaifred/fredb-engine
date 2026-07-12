@@ -1,4 +1,5 @@
 #include "fredb.h"
+#include <algorithm>
 #include <chrono>
 #include <cstdarg>
 #include <cstdio>
@@ -7,6 +8,7 @@
 #include <fstream>
 #include <random>
 #include <string>
+#include <vector>
 
 static std::ofstream g_log;
 
@@ -136,6 +138,32 @@ static void bench_readseq() {
     report("readseq", ops, elapsed);
 }
 
+static void bench_readrandom_latency() {
+    wipe_db();
+    Fredb db(DB_DIR);
+    std::string val = make_value();
+    for (int i = 0; i < NUM_ENTRIES; i++)
+        db.put(make_key(i), val);
+
+    std::mt19937 rng(42);
+    std::uniform_int_distribution<int> dist(0, NUM_ENTRIES - 1);
+    const int SAMPLES = 100000;
+    std::vector<double> latencies;
+    latencies.reserve(SAMPLES);
+    for (int i = 0; i < SAMPLES; i++) {
+        auto t0 = Clock::now();
+        db.get(make_key(dist(rng)));
+        double us = std::chrono::duration<double, std::micro>(Clock::now() - t0).count();
+        latencies.push_back(us);
+    }
+
+    std::sort(latencies.begin(), latencies.end());
+    tee("readrandom p50   : %10.3f micros\n", latencies[SAMPLES * 50 / 100]);
+    tee("readrandom p95   : %10.3f micros\n", latencies[SAMPLES * 95 / 100]);
+    tee("readrandom p99   : %10.3f micros\n", latencies[SAMPLES * 99 / 100]);
+    tee("readrandom p999  : %10.3f micros\n", latencies[SAMPLES * 999 / 1000]);
+}
+
 static void bench_readreverse() {
     wipe_db();
     Fredb db(DB_DIR);
@@ -168,6 +196,8 @@ int main() {
     bench_readrandom();
     bench_readseq();
     bench_readreverse();
+    tee("\n");
+    bench_readrandom_latency();
 
     std::filesystem::remove_all(DB_DIR);
     return 0;

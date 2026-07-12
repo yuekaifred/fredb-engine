@@ -41,12 +41,9 @@ int main() {
   check(throws([&] { db.get(""); }), "get empty key throws");
   check(throws([&] { db.remove(""); }), "remove empty key throws");
 
-  std::string huge_key(size_t(std::numeric_limits<uint32_t>::max()) + 1, 'k');
-  std::string huge_val(size_t(std::numeric_limits<uint32_t>::max()) + 1, 'v');
-  check(throws([&] { db.put(huge_key, "v"); }), "put oversized key throws");
-  check(throws([&] { db.put("k", huge_val); }), "put oversized value throws");
-  check(throws([&] { db.get(huge_key); }), "get oversized key throws");
-  check(throws([&] { db.remove(huge_key); }), "remove oversized key throws");
+  // oversized key/value (>4GB) checks live in test_oversized_key_value.cpp,
+  // excluded from the default suite since they need several GB of RAM to
+  // materialize the buffers.
 
   // valid ops still work after failed ones
   db.put("ok", "1");

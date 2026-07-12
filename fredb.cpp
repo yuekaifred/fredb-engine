@@ -542,6 +542,19 @@ void Fredb::flush() {
   immutable_cv.wait(lock, [this] { return !immutable_memtable.has_value(); });
 }
 
+uint64_t Fredb::total_size() {
+  std::lock_guard<std::mutex> lock(mu);
+  uint64_t total = 0;
+  for (uint64_t sz : level_sizes)
+    total += sz;
+  total += current_memtable.byte_size();
+  if (immutable_memtable.has_value())
+    total += immutable_memtable->byte_size();
+  std::error_code ec;
+  total += std::filesystem::file_size(dir + "/WAL", ec);
+  return total;
+}
+
 void Fredb::clear() {
   std::unique_lock<std::mutex> lock(mu);
   immutable_cv.wait(lock, [this] { return !immutable_memtable.has_value(); });

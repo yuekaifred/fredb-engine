@@ -32,6 +32,7 @@ public:
   std::vector<std::pair<std::string, std::string>> get_range(const std::string &start, const std::string &end);
   void flush();
   void clear();
+  uint64_t total_size();
 
 private:
   struct SSTInfo {

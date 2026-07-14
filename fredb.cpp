@@ -319,6 +319,11 @@ void Fredb::remove(const std::string &key) {
     rotate_memtable(lock);
 }
 
+void Fredb::remove_range(const std::string &start, const std::string &end) {
+  for (auto &kv : get_range(start, end))
+    remove(kv.first);
+}
+
 std::optional<std::optional<std::string>>
 Fredb::scan_sst(int id, const std::string &key) {
   auto &idx = sparse_indexes[id];

@@ -29,6 +29,7 @@ public:
   void put(const std::string &key, const std::string &value);
   std::optional<std::string> get(const std::string &key);
   void remove(const std::string &key);
+  void remove_range(const std::string &start, const std::string &end);
   std::vector<std::pair<std::string, std::string>> get_range(const std::string &start, const std::string &end);
   void flush();
   void clear();

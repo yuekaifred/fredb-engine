@@ -9,7 +9,7 @@ if(CCACHE)
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
 endif()
 
-add_library(fredb_core STATIC fredb.cpp compaction.cpp wal.cpp memtable.cpp bloom.cpp)
+add_library(fredb_core STATIC fredb.cpp compaction.cpp wal.cpp memtable.cpp bloom.cpp fredb_c.cpp)
 target_include_directories(fredb_core PUBLIC .)
 target_compile_options(fredb_core PUBLIC -pthread)
 target_link_libraries(fredb_core PUBLIC pthread)
